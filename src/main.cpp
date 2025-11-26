@@ -1,12 +1,13 @@
 #include "Board.h"
 #include <iostream>
 #include <string>
+#include <limits>
 #include <vector>
 #include <cmath>
 #include <thread>
 #include <chrono>
 #include <random>
-#include <limits>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -14,7 +15,7 @@
 using ms = std::chrono::milliseconds;
 inline void sleep_ms(int t){ std::this_thread::sleep_for(ms(t)); }
 
-// ---------------- Helper functions ----------------
+// helpfunctions 
 void slowPrint(const std::string &s, int delay=6){
     for(char c : s){
         std::cout << c << std::flush;
@@ -100,8 +101,15 @@ void tone(int freq, int duration_ms) {
     }
 #endif
 }
-
-// ---------------- Title Screen ----------------
+void playTitleMelody() {
+    int notes[] = {523, 587, 659, 698, 784, 659, 587, 523}; 
+    int durations[] = {200, 200, 200, 200, 400, 200, 200, 400};
+    for (int i = 0; i < 8; i++) {
+        tone(notes[i], durations[i]);
+        sleep_ms(50); 
+    }
+}
+// Title Screen 
 void divineTitleScreen(){
     cls();
     const char* gold = "\033[38;2;255;215;0m";
@@ -109,10 +117,10 @@ void divineTitleScreen(){
     const char* mag = "\033[38;2;220;80;190m";
     const char* reset = "\033[0m";
 
-    slowPrint(" E ho mai ka mana... Grant us strength...\n\n", 40);
+    slowPrint(" E ho mai ka mana... Grant us wisdom...\n\n", 40);
     tone(330, 180);
     sleep_ms(300);
-
+//this follows the screen down in a cool effect 
     waveReveal(std::string(cyan) + "The ocean sighs...Ancestors carry memory of the aina..." + std::string(reset), 8, 10);
     tone(370, 120);
     sleep_ms(250);
@@ -128,7 +136,7 @@ void divineTitleScreen(){
     flash(5,40);
     tone(1200, 180);
     sleep_ms(250);
-
+    playTitleMelody(); 
     cls();
     slowPrint(gold);
 
@@ -153,46 +161,65 @@ void divineTitleScreen(){
 
     std::cout << "                   >>  PRESS ENTER TO BEGIN YOUR CHALLENGE  <<\n";
     std::cin.clear();
+    std::cin.sync();
     std::cin.get();
+    cls();
+}
+
+
+// Instructions on how to play da game
+void showInstructions() {
+    cls();
+    std::cout << "---------------- KONANE INSTRUCTIONS ----------------\n\n";
+    std::cout << "1. The board is 8x8 with Black (B) and White (W) pieces.\n";
+    std::cout << "2. Players take turns moving one piece at a time.\n";
+    std::cout << "3. A valid move jumps over an adjacent opponent piece into an empty square.\n";
+    std::cout << "   - Horizontal or vertical only, exactly two spaces.\n";
+    std::cout << "4. Enter moves in this format: r1 c1 r2 c2\n";
+    std::cout << "   Example: 3 0 3 2\n";
+    std::cout << "5. The loser is the one left with no legal moves\n";
+    std::cout << "6. Type 'exit' to quit the game\n\n";
+    std::cout << "Ready to begin? \n";
+    std::cout << "Press ENTER to start! \n";
+    
+    // Wait for enter
+    std::cin.clear();
+    std::cin.sync(); 
+    std::cin.get();
+
     cls();
 }
 
 // ---------------- Main Game ----------------
 int main() {
     divineTitleScreen();
-
+    showInstructions();
+    
     Board* board = new Board(8);
 
-    // Remove the center piece for standard Kōnane start
-    board->removePiece(3, 3);  // assuming 0-indexed, center of 8x8 board
+
+    board->removePiece(3, 3);  // remove center of 8x8 board
 
     char player = 'B';
 
 while (true) {
-    board->print(); // always show current board
+    board->print(); // always shows da current board
+    static int melodyStep = 0;// play da bg music
+    int bgNotes[] = {523, 587, 659, 698, 784};
+    tone(bgNotes[melodyStep % 5], 100); 
+    melodyStep++;
+// endgame no more moves
     if (!board->hasMoves(player)) {
         std::cout << "Player " << player << " has no moves. ";
         std::cout << (player == 'B' ? "White" : "Black") << " wins!\n";
         break;
     }
 
-    std::cout << "Player " << player << "'s turn. Enter move (r1 c1 r2 c2), or 'save', 'load', 'exit': ";
+    std::cout << "Player " << player << "'s turn. Enter move (r1 c1 r2 c2) (ex 1 2 3 4), or 'exit': ";
     std::string input;
     std::getline(std::cin, input);
 
     if (input == "exit") break;
-
-    if (input.rfind("save", 0) == 0) {
-        std::string name = input.substr(5);
-        board->saveToFile(name);
-        continue;
-    }
-
-    if (input.rfind("load", 0) == 0) {
-        std::string name = input.substr(5);
-        board->loadFromFile(name);
-        continue;
-    }
 
     int r1, c1, r2, c2;
     if (sscanf(input.c_str(), "%d %d %d %d", &r1, &c1, &r2, &c2) != 4) {
@@ -201,17 +228,24 @@ while (true) {
     }
 
     if (board->makeMove(r1, c1, r2, c2, player)) {
-        tone(600, 100); // beep after valid move
-        player = (player == 'B' ? 'W' : 'B'); // switch player
+        tone(600, 100); // beeps after valid move
+        player = (player == 'B' ? 'W' : 'B'); // switches da player
     } else {
         std::cout << "Invalid move! Try again.\n";
+        tone(400, 200); // beeps after invalid move
     }
 }
 
     delete board;
 
-    // GAME OVER - waits for ENTER
+    // Game over - waits for da ENTER
     std::cout << "Game over. Press ENTER to exit...";
+    //Game over music
+    tone(400, 200);  
+    tone(500, 200);  
+    tone(600, 300);
+    tone(400, 200);
+    tone(400, 200); 
     std::cin.get();
 
     return 0;

@@ -30,4 +30,3 @@ VS Code C++ Extension
 - Add AI opponent
 - Add color-coded board display
 - Add mouse/GUI front-end
-- Improve save/load formatting

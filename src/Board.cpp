@@ -73,26 +73,4 @@ void Board::removePiece(int row, int col) {
         grid[row][col] = ' ';
 }
 
-void Board::saveToFile(const std::string &filename) {
-    std::ofstream fout(filename);
-    for (auto &row : grid) {
-        for (auto &cell : row) fout << cell;
-        fout << "\n";
-    }
-    fout.close();
-    std::cout << "Board saved to " << filename << "\n";
-}
 
-void Board::loadFromFile(const std::string &filename) {
-    std::ifstream fin(filename);
-    if (!fin) { std::cout << "Failed to open " << filename << "\n"; return; }
-    std::string line;
-    int r = 0;
-    while (std::getline(fin, line) && r < size) {
-        for (int c = 0; c < size && c < line.size(); ++c)
-            grid[r][c] = line[c];
-        r++;
-    }
-    fin.close();
-    std::cout << "Board loaded from " << filename << "\n";
-}
