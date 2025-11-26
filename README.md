@@ -7,7 +7,7 @@ This software lets players view a game board, make moves, jump pieces, and repla
 
 This program  improved my coding skills, learned how to structure a larger project, and gave me experience with compiling and running C++ programs.
 
-[Software Demo Video](#)
+[Software Demo Video](https://youtu.be/JLd19IKZxhA)
 
 # Development Environment
 
@@ -29,4 +29,5 @@ VS Code C++ Extension
 
 - Add AI opponent
 - Add color-coded board display
+- Add background music while game is playing
 - Add mouse/GUI front-end

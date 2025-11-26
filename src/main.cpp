@@ -120,7 +120,7 @@ void divineTitleScreen(){
     slowPrint(" E ho mai ka mana... Grant us wisdom...\n\n", 40);
     tone(330, 180);
     sleep_ms(300);
-//this follows the screen down in a cool effect 
+//this follows the screen down in a cool effect then to the title screen 
     waveReveal(std::string(cyan) + "The ocean sighs...Ancestors carry memory of the aina..." + std::string(reset), 8, 10);
     tone(370, 120);
     sleep_ms(250);
@@ -198,7 +198,7 @@ int main() {
     Board* board = new Board(8);
 
 
-    board->removePiece(3, 3);  // remove center of 8x8 board
+    board->removePiece(3, 3);  // remove centerpeice of 8x8 board
 
     char player = 'B';
 
@@ -238,7 +238,7 @@ while (true) {
 
     delete board;
 
-    // Game over - waits for da ENTER
+    // Game over - waits for da ENTER to close game
     std::cout << "Game over. Press ENTER to exit...";
     //Game over music
     tone(400, 200);  
